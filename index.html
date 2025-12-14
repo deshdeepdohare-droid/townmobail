@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Town | Premium Refurbished Phones</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Smooth fade animation for page switching */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cart Widget Animation */
+        .cart-widget {
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: bottom right;
+        }
+        
+        .cart-open .cart-widget {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-overlay {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0; pointer-events: none;
+        }
+        .cart-open .cart-overlay { opacity: 1; pointer-events: auto; }
+
+        /* Custom Scrollbar */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+
+        /* Gallery Active State */
+        .thumb-active { border-color: #2563EB; ring-width: 2px; ring-color: #bfdbfe; }
+        
+        /* Pulse animation for cart button */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .cart-pulse::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: #2563EB;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="router('home')">
+                    <div class="bg-blue-600 text-white p-1.5 rounded-lg mr-2 group-hover:bg-blue-700 transition">
+                        <i class="fas fa-mobile-alt text-xl"></i>
+                    </div>
+                    <h1 class="font-bold text-xl tracking-tight text-gray-900">Mobile <span class="text-blue-600">Town</span></h1>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" onclick="router('home')" class="text-gray-600 hover:text-blue-600 font-medium transition">Home</a>
+                    <a href="#" onclick="router('shop')" class="text-gray-600 hover:text-blue-600 font-medium transition">Shop All</a>
+                    <a href="#" onclick="filterByBrand('Apple')" class="text-gray-600 hover:text-blue-600 font-medium transition">Apple</a>
+                    <a href="#" onclick="filterByBrand('Samsung')" class="text-gray-600 hover:text-blue-600 font-medium transition">Samsung</a>
+                    <a href="#" onclick="router('about')" class="text-gray-600 hover:text-blue-600 font-medium transition">Why Us?</a>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-5">
+                    <button onclick="router('shop')" class="text-gray-500 hover:text-blue-600 transition">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 text-xl" onclick="alert('Use the category buttons on the home page to browse!')">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="app" class="flex-grow">
+        <!-- Content injected via JS -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-1">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">Mobile <span class="text-blue-500 ml-1">Town</span></h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">India's premium destination for certified refurbished smartphones. We give technology a second life, saving your money and the planet.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 border-b border-gray-700 pb-2 inline-block">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="#" onclick="router('shop')" class="hover:text-blue-400 transition">All Phones</a></li>
+                        <li><a href="#" onclick="router('about')" class="hover:text-blue-400 transition">Quality Promise</a></li>
+                        <li><a href="#" onclick="router('contact')" class="hover:text-blue-400 transition">Track Order</a></li>
+                        <li><a href="#" onclick="router('contact')" class="hover:text-blue-400 transition">Returns & Warranty</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 border-b border-gray-700 pb-2 inline-block">Contact</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><i class="fas fa-envelope mr-2"></i> support@mobiletown.in</li>
+                        <li><i class="fas fa-phone mr-2"></i> +91 1800-123-4567</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> Cyber City, Gurgaon</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 border-b border-gray-700 pb-2 inline-block">Newsletter</h4>
+                    <p class="text-gray-400 text-sm mb-4">Subscribe for flash sale alerts.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 w-full rounded-l-md text-gray-900 focus:outline-none">
+                        <button class="bg-blue-600 px-4 py-2 rounded-r-md hover:bg-blue-700 transition">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2018 Mobile Town Refurbished. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART UI ELEMENTS -->
+    <button onclick="toggleCart()" class="fixed bottom-6 right-6 z-[60] bg-blue-600 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:bg-blue-700 transition transform hover:scale-110 cart-pulse">
+        <i class="fas fa-shopping-cart text-2xl"></i>
+        <span id="cart-count" class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform bg-red-600 rounded-full border-2 border-white shadow-sm">0</span>
+    </button>
+
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-[50] cart-overlay backdrop-blur-[2px]" onclick="toggleCart()"></div>
+    
+    <div id="cart-drawer" class="fixed bottom-24 right-6 w-full max-w-[380px] bg-white shadow-2xl z-[55] cart-widget rounded-2xl flex flex-col max-h-[70vh] border border-gray-100">
+        <div class="px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center rounded-t-2xl">
+            <h2 class="text-lg font-bold text-gray-900 flex items-center"><i class="fas fa-shopping-bag mr-2 text-blue-600"></i> Your Cart</h2>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600 transition p-1"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar"></div>
+        <div class="border-t border-gray-200 p-4 bg-white rounded-b-2xl">
+            <div class="flex justify-between text-base font-medium text-gray-900 mb-2">
+                <p>Subtotal</p>
+                <p id="cart-total">₹0</p>
+            </div>
+            <button onclick="router('checkout'); toggleCart()" class="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-lg text-base font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all">Checkout</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA: Extended Inventory with Detailed Specs ---
+        const products = [
+            // Apple
+            { 
+                id: 1, brand: 'Apple', name: 'iPhone 13 (128GB)', condition: 'Superb', price: 38999, oldPrice: 59900, 
+                images: ['https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1631857461427-04771031b9d2?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1669212560377-5264b38d394b?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'A15 Bionic chip, Dual-camera system. Fully tested.', 
+                specs: { screen: '6.1" OLED Super Retina XDR', processor: 'A15 Bionic', camera: '12MP + 12MP Dual', battery: '3240 mAh', ram: '4GB', storage: '128GB', os: 'iOS 15 (Upgradable)' } 
+            },
+            { 
+                id: 2, brand: 'Apple', name: 'iPhone 11 (64GB)', condition: 'Good', price: 19499, oldPrice: 43900, 
+                images: ['iphone1.jpg', 'iphone2.jpg', 'iphone3.webp'], 
+                desc: 'Classic choice for budget iOS experience. Reliable performance.', 
+                specs: { screen: '6.1" Liquid Retina IPS', processor: 'A13 Bionic', camera: '12MP + 12MP Dual', battery: '3110 mAh', ram: '4GB', storage: '64GB', os: 'iOS 13 (Upgradable)' } 
+            },
+            { 
+                id: 13, brand: 'Apple', name: 'iPhone 14 Pro', condition: 'Superb', price: 82999, oldPrice: 129900, 
+                images: ['Apple-iPhone-14-Pro-500x500.webp', 'Apple-iPhone-14-Pro-Mobile-Phone-493177786-i-4-1200Wx1200H-485x485-optimized.webp', 'image_1024.jpg'], 
+                desc: 'Dynamic Island, Always-On display. Professional grade cameras.', 
+                specs: { screen: '6.1" LTPO OLED 120Hz', processor: 'A16 Bionic', camera: '48MP + 12MP + 12MP', battery: '3200 mAh', ram: '6GB', storage: '128GB', os: 'iOS 16' } 
+            },
+            { 
+                id: 14, brand: 'Apple', name: 'iPhone 12 (128GB)', condition: 'Excellent', price: 29999, oldPrice: 59900, 
+                images: ['https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1611472173366-3ace73a144f8?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1603539279542-e8c0296c09b2?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'Ceramic Shield, 5G speed, A14 Bionic. Great balance.', 
+                specs: { screen: '6.1" OLED Super Retina XDR', processor: 'A14 Bionic', camera: '12MP + 12MP', battery: '2815 mAh', ram: '4GB', storage: '128GB', os: 'iOS 14 (Upgradable)' } 
+            },
+            
+            // Samsung
+            { 
+                id: 7, brand: 'Samsung', name: 'Galaxy S22 Ultra', condition: 'Superb', price: 42999, oldPrice: 109999, 
+                images: ['samsung-galaxy-s22-ultra-128gb-5g-phantom-black.jpg', 'RGB-220210_samsung_S22-Ultra_1118_F-1.jpg', '1-46-3-700x700.jpg'], 
+                desc: 'Built-in S Pen, Nightography camera. Ultimate power.', 
+                specs: { screen: '6.8" AMOLED 120Hz', processor: 'Snapdragon 8 Gen 1', camera: '108MP Quad', battery: '5000 mAh', ram: '12GB', storage: '256GB', os: 'Android 12' } 
+            },
+            { 
+                id: 16, brand: 'Samsung', name: 'Galaxy Z Flip 3', condition: 'Good', price: 29999, oldPrice: 84999, 
+                images: ['51Vm1+tJ3AL.jpg', 'zflip3_colorselection_gray_mo.webp', '71+sHGm9-jL._AC_UF1000,1000_QL80_.jpg'], 
+                desc: 'Folds to fit your pocket. Stylish and innovative.', 
+                specs: { screen: '6.7" Foldable AMOLED', processor: 'Snapdragon 888', camera: '12MP Dual', battery: '3300 mAh', ram: '8GB', storage: '128GB', os: 'Android 11' } 
+            },
+            { 
+                id: 20, brand: 'Samsung', name: 'Galaxy S21 FE 5G', condition: 'Excellent', price: 19999, oldPrice: 74999, 
+                images: ['Samsung-Galaxy-S21-FE-5G-renders-white.webp', 'S21FE_Carousel_Video_Thumbnail_MO.jpeg', '62db099d-2c48-49ad-9337-0f7ddd482ad5.__CR0,0,600,450_PT0_SX600_V1___.jpg'], 
+                desc: 'Fan Edition with pro-grade features. Best value flagship.', 
+                specs: { screen: '6.4" AMOLED 120Hz', processor: 'Exynos 2100', camera: '12MP Triple', battery: '4500 mAh', ram: '8GB', storage: '128GB', os: 'Android 12' } 
+            },
+            
+            // OnePlus
+            { 
+                id: 4, brand: 'OnePlus', name: 'OnePlus 9 Pro', condition: 'Superb', price: 21999, oldPrice: 64999, 
+                images: ['one_plus_9pro-tt.png', '671de5b5692d9.webp', 'ON102607_2f898173-48b9-4005-be32-c697d2d3bb50.webp'], 
+                desc: 'Hasselblad Camera for Mobile. Warp Charge 65.', 
+                specs: { screen: '6.7" Fluid AMOLED 120Hz', processor: 'Snapdragon 888', camera: '48MP Quad', battery: '4500 mAh', ram: '12GB', storage: '256GB', os: 'OxygenOS' } 
+            },
+            { 
+                id: 26, brand: 'OnePlus', name: 'OnePlus 11R', condition: 'Excellent', price: 28999, oldPrice: 39999, 
+                images: ['https://images.unsplash.com/photo-1678911820864-e2c567c655d7?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1681283626269-805178229b36?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1680106208889-b003180436ce?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'Performance flagship. SuperVOOC charging.', 
+                specs: { screen: '6.74" AMOLED 120Hz', processor: 'Snapdragon 8+ Gen 1', camera: '50MP Triple', battery: '5000 mAh', ram: '8GB', storage: '128GB', os: 'OxygenOS 13' } 
+            },
+            
+            // Others
+            { 
+                id: 8, brand: 'Google', name: 'Pixel 6a', condition: 'Excellent', price: 16999, oldPrice: 43999, 
+                images: ['https://images.unsplash.com/photo-1659364952044-67215914619b?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1667055740449-34dc517f0ff8?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1669046603592-3c467df99c15?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'Smartest camera in the game. Pure Android experience.', 
+                specs: { screen: '6.1" OLED 60Hz', processor: 'Google Tensor', camera: '12.2MP Dual', battery: '4410 mAh', ram: '6GB', storage: '128GB', os: 'Android 12' } 
+            },
+            { 
+                id: 21, brand: 'Google', name: 'Pixel 7', condition: 'Superb', price: 34999, oldPrice: 59999, 
+                images: ['https://images.unsplash.com/photo-1668630048118-20815e9a4f6a?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1678253106571-0669143640b7?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1667055740449-34dc517f0ff8?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'The helpful phone from Google with advanced photo features.', 
+                specs: { screen: '6.3" 90Hz OLED', processor: 'Tensor G2', camera: '50MP Dual', battery: '4355 mAh', ram: '8GB', storage: '128GB', os: 'Android 13' } 
+            },
+            { 
+                id: 25, brand: 'Realme', name: 'Realme 11 Pro+', condition: 'Superb', price: 23999, oldPrice: 29999, 
+                images: ['https://images.unsplash.com/photo-1585060544812-6b45742d762f?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80'], 
+                desc: '200MP SuperZoom Camera and curved leather design.', 
+                specs: { screen: '6.7" AMOLED 120Hz', processor: 'Dimensity 7050', camera: '200MP Triple', battery: '5000 mAh', ram: '8GB', storage: '256GB', os: 'Realme UI' } 
+            },
+            { 
+                id: 22, brand: 'Nothing', name: 'Nothing Phone (1)', condition: 'Good', price: 21999, oldPrice: 32999, 
+                images: ['https://images.unsplash.com/photo-1657803698059-4d6402484f3e?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1658428135833-2287c80539c3?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1659556209581-28562725e648?auto=format&fit=crop&w=800&q=80'], 
+                desc: 'Glyph Interface. Unique transparent design.', 
+                specs: { screen: '6.55" OLED 120Hz', processor: 'Snapdragon 778G+', camera: '50MP Dual', battery: '4500 mAh', ram: '8GB', storage: '256GB', os: 'Nothing OS' } 
+            },
+            { 
+                id: 5, brand: 'Xiaomi', name: 'Redmi Note 10 Pro', condition: 'Fair', price: 8999, oldPrice: 19999, 
+                images: ['https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1598327773043-5100d05a4dc3?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80'], 
+                desc: '120Hz AMOLED, 64MP Quad Camera. Great budget performer.', 
+                specs: { screen: '6.67" AMOLED 120Hz', processor: 'Snapdragon 732G', camera: '64MP Quad', battery: '5020 mAh', ram: '6GB', storage: '128GB', os: 'MIUI 12' } 
+            }
+        ];
+
+        // --- STATE ---
+        let cart = [];
+        let currentFilter = 'All';
+        let currentImageIndex = 0;
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            router('home');
+            startCountdown();
+        };
+
+        // --- ROUTING SYSTEM ---
+        function router(page, param = null) {
+            const app = document.getElementById('app');
+            window.scrollTo(0,0);
+            
+            if (page === 'home') {
+                renderHome(app);
+            } else if (page === 'shop') {
+                renderShop(app, param); 
+            } else if (page === 'product') {
+                renderProductDetail(app, param); 
+            } else if (page === 'checkout') {
+                renderCheckout(app);
+            } else if (page === 'about' || page === 'contact') {
+                renderContact(app);
+            }
+        }
+
+        function startCountdown() {
+            var countDownDate = new Date().getTime() + (4 * 60 * 60 * 1000) + (32 * 60 * 1000); 
+            var x = setInterval(function() {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const hEl = document.getElementById("hours");
+                const mEl = document.getElementById("minutes");
+                const sEl = document.getElementById("seconds");
+                if(hEl) hEl.innerHTML = hours < 10 ? '0' + hours : hours;
+                if(mEl) mEl.innerHTML = minutes < 10 ? '0' + minutes : minutes;
+                if(sEl) sEl.innerHTML = seconds < 10 ? '0' + seconds : seconds;
+                if (distance < 0) clearInterval(x);
+            }, 1000);
+        }
+
+        // --- VIEWS ---
+        function renderHome(container) {
+            container.innerHTML = `
+                <div class="fade-in">
+                    <!-- Hero -->
+                    <div class="relative bg-gray-900 overflow-hidden h-[600px] flex items-center">
+                        <div class="absolute inset-0">
+                            <img class="w-full h-full object-cover opacity-30 scale-105" src="https://images.unsplash.com/photo-1556656793-02715d8dd660?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" alt="Phones">
+                            <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent"></div>
+                        </div>
+                        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+                            <div class="max-w-xl">
+                                <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold tracking-wide uppercase mb-4 inline-block shadow-lg">Refurbished Revolution</span>
+                                <h1 class="text-5xl font-extrabold tracking-tight text-white sm:text-6xl mb-6 leading-tight">Flagship Tech.<br/>Budget Price.</h1>
+                                <p class="text-xl text-gray-300 mb-8 font-light">Join over 50,000 happy customers who switched to Mobile Town.</p>
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="router('shop')" class="px-8 py-4 border border-transparent text-lg font-bold rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-1">View All Phones</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Why Us Section -->
+                    <div class="bg-gray-50 py-16">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-12">The Mobile Town Difference</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-check-circle"></i></div>
+                                    <h3 class="text-xl font-bold mb-2">64-Step Quality Check</h3>
+                                    <p class="text-gray-500">Every single phone is rigorously tested for hardware and software functionality.</p>
+                                </div>
+                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-shield-alt"></i></div>
+                                    <h3 class="text-xl font-bold mb-2">6 Months Warranty</h3>
+                                    <p class="text-gray-500">We stand by our devices. Enjoy complete peace of mind with our warranty coverage.</p>
+                                </div>
+                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-undo"></i></div>
+                                    <h3 class="text-xl font-bold mb-2">7 Days Easy Return</h3>
+                                    <p class="text-gray-500">Don't like it? Return it. No questions asked replacement policy.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deal of the Day -->
+                    <div class="bg-blue-600 py-20 relative overflow-hidden">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-2xl flex flex-col md:flex-row items-center gap-12">
+                                <div class="flex-1 text-center md:text-left">
+                                    <span class="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-wider mb-4 inline-block">Flash Sale</span>
+                                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">iPhone 13 - Superb Condition</h2>
+                                    <div class="flex items-center justify-center md:justify-start gap-4 mb-8">
+                                        <div class="text-center"><div id="hours" class="bg-gray-100 rounded-lg p-3 w-16 h-16 flex items-center justify-center text-xl font-bold text-gray-900">00</div><div class="text-xs text-gray-200 mt-1">Hrs</div></div>
+                                        <div class="text-center"><div id="minutes" class="bg-gray-100 rounded-lg p-3 w-16 h-16 flex items-center justify-center text-xl font-bold text-gray-900">00</div><div class="text-xs text-gray-200 mt-1">Mins</div></div>
+                                        <div class="text-center"><div id="seconds" class="bg-gray-100 rounded-lg p-3 w-16 h-16 flex items-center justify-center text-xl font-bold text-gray-900">00</div><div class="text-xs text-gray-200 mt-1">Secs</div></div>
+                                    </div>
+                                    <button onclick="router('product', 1)" class="w-full md:w-auto px-8 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">Buy Now - ₹38,999</button>
+                                </div>
+                                <div class="flex-1 relative"><img src="https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80" class="w-full max-w-sm mx-auto transform -rotate-6 hover:rotate-0 transition duration-500 drop-shadow-2xl rounded-3xl" alt="Deal Phone"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="bg-white py-16">
+                        <div class="max-w-4xl mx-auto px-4">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition cursor-pointer">
+                                    <h3 class="font-bold text-lg mb-2">What does "Superb" condition mean?</h3>
+                                    <p class="text-gray-600">Superb condition phones have negligible scratches (if any) and look almost brand new. Battery health is typically above 90%.</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition cursor-pointer">
+                                    <h3 class="font-bold text-lg mb-2">Do you provide a charger?</h3>
+                                    <p class="text-gray-600">Yes, all our phones come with a compatible high-quality charging cable and adapter in the box.</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition cursor-pointer">
+                                    <h3 class="font-bold text-lg mb-2">Is the warranty applicable all over India?</h3>
+                                    <p class="text-gray-600">Yes! You can claim warranty support from any major city in India via our courier pickup service.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- New Arrivals -->
+                    <div class="bg-gray-50 py-20">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <h2 class="text-3xl font-bold tracking-tight text-gray-900 mb-10">New Arrivals</h2>
+                            <div class="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+                                ${products.slice(0, 8).map(product => getProductCard(product)).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderShop(container, brandFilter = 'All') {
+            currentFilter = brandFilter;
+            const filteredProducts = brandFilter === 'All' ? products : products.filter(p => p.brand === brandFilter);
+            container.innerHTML = `
+                <div class="fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-4">
+                        <h1 class="text-3xl font-bold text-gray-900">${brandFilter} Phones</h1>
+                        <div class="flex gap-2 overflow-x-auto hide-scroll pb-2 w-full md:w-auto">
+                            ${['All', 'Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Google', 'Realme'].map(brand => `<button onclick="filterByBrand('${brand}')" class="px-5 py-2.5 rounded-full text-sm font-medium border transition whitespace-nowrap shadow-sm ${brandFilter === brand ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}">${brand}</button>`).join('')}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        ${filteredProducts.length > 0 ? filteredProducts.map(p => getProductCard(p)).join('') : `<div class="col-span-full text-center py-24 bg-white rounded-2xl border border-dashed border-gray-300"><p class="text-gray-500 text-lg">No products found for ${brandFilter}.</p></div>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProductDetail(container, productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return router('shop');
+            currentImageIndex = 0;
+            const specs = product.specs || {};
+            
+            container.innerHTML = `
+                <div class="fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <button onclick="router('shop')" class="group text-gray-500 hover:text-blue-600 flex items-center mb-8 font-medium transition"><i class="fas fa-arrow-left mr-2"></i> Back to Shop</button>
+                    
+                    <div class="lg:grid lg:grid-cols-2 lg:gap-x-16 lg:items-start mb-16">
+                        <div class="flex flex-col gap-4">
+                            <div class="w-full aspect-w-4 aspect-h-5 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm"><img id="main-image" src="${product.images[0]}" class="w-full h-full object-contain p-8"></div>
+                            <div class="grid grid-cols-3 gap-4">${product.images.map((img, index) => `<div onclick="changeImage('${img}', ${index})" class="thumbnail-btn cursor-pointer rounded-xl border-2 ${index === 0 ? 'border-blue-600' : 'border-transparent'} hover:border-blue-300 overflow-hidden bg-white p-2 h-24 flex items-center justify-center transition-all"><img src="${img}" class="h-full w-auto object-contain pointer-events-none"></div>`).join('')}</div>
+                        </div>
+                        <div class="mt-10 px-4 sm:px-0 sm:mt-0">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getConditionColor(product.condition)} mb-4">${product.condition}</span>
+                            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">${product.name}</h1>
+                            <p class="text-gray-500 mb-6 text-lg">${product.desc}</p>
+                            
+                            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+                                <div class="flex items-baseline">
+                                    <p class="text-5xl font-bold text-gray-900">₹${product.price.toLocaleString()}</p>
+                                    <p class="ml-4 text-xl text-gray-400 line-through">₹${product.oldPrice.toLocaleString()}</p>
+                                </div>
+                                <p class="text-green-600 text-sm font-semibold mt-2">Save ₹${(product.oldPrice - product.price).toLocaleString()} (Inclusive of taxes)</p>
+                            </div>
+
+                            <button onclick="addToCart(${product.id})" class="w-full bg-blue-600 border border-transparent rounded-xl py-4 px-8 flex items-center justify-center text-lg font-bold text-white hover:bg-blue-700 hover:shadow-lg transition-all mb-8"><i class="fas fa-shopping-cart mr-2"></i> Add to Cart</button>
+                            
+                            <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div class="flex items-center"><i class="fas fa-box text-blue-500 mr-2"></i> In Box: Phone, Cable</div>
+                                <div class="flex items-center"><i class="fas fa-shield-alt text-blue-500 mr-2"></i> 6 Months Warranty</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Specifications Table -->
+                    <div class="border-t border-gray-200 pt-12">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-8">Technical Specifications</h3>
+                        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <div class="p-6 border-b md:border-b-0 md:border-r border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Display</span>
+                                    <span class="font-semibold text-gray-900">${specs.screen}</span>
+                                </div>
+                                <div class="p-6 border-b border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Processor</span>
+                                    <span class="font-semibold text-gray-900">${specs.processor}</span>
+                                </div>
+                                <div class="p-6 border-b md:border-b-0 md:border-r border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Camera</span>
+                                    <span class="font-semibold text-gray-900">${specs.camera}</span>
+                                </div>
+                                <div class="p-6 border-b border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Battery</span>
+                                    <span class="font-semibold text-gray-900">${specs.battery}</span>
+                                </div>
+                                <div class="p-6 border-b md:border-b-0 md:border-r border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">RAM</span>
+                                    <span class="font-semibold text-gray-900">${specs.ram}</span>
+                                </div>
+                                <div class="p-6 border-b border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Storage</span>
+                                    <span class="font-semibold text-gray-900">${specs.storage}</span>
+                                </div>
+                                <div class="p-6 md:border-r border-gray-100 flex justify-between hover:bg-gray-50">
+                                    <span class="text-gray-500">Operating System</span>
+                                    <span class="font-semibold text-gray-900">${specs.os}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function changeImage(src, index) {
+            document.getElementById('main-image').src = src;
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            thumbnails.forEach((thumb, i) => {
+                if(i === index) { thumb.classList.add('border-blue-600'); thumb.classList.remove('border-transparent'); } 
+                else { thumb.classList.remove('border-blue-600'); thumb.classList.add('border-transparent'); }
+            });
+        }
+
+        function renderCheckout(container) {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="max-w-7xl mx-auto px-4 py-24 text-center fade-in"><i class="fas fa-shopping-basket text-4xl text-gray-400 mb-6"></i><h2 class="text-3xl font-bold text-gray-900">Your cart is empty</h2><button onclick="router('shop')" class="mt-8 px-8 py-4 bg-blue-600 text-white font-bold rounded-xl">Start Shopping</button></div>`;
+                return;
+            }
+            container.innerHTML = `
+                <div class="fade-in max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-8">Secure Checkout</h1>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+                             <form onsubmit="handleOrder(event)" class="space-y-6">
+                                <h2 class="text-xl font-bold mb-6">Shipping Details</h2>
+                                <div class="grid grid-cols-2 gap-6"><input type="text" required class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" placeholder="First Name"><input type="text" required class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" placeholder="Last Name"></div>
+                                <input type="tel" required class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" placeholder="Phone Number">
+                                <textarea required rows="3" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" placeholder="Address"></textarea>
+                                <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 mt-8">Place Order</button>
+                            </form>
+                        </div>
+                        <div class="lg:col-span-1"><div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 sticky top-24"><h2 class="text-lg font-bold mb-6">Order Summary</h2><div class="space-y-4 mb-6">${cart.map(item => `<div class="flex gap-4 bg-white p-3 rounded-xl border border-gray-200"><img src="${item.images[0]}" class="w-10 h-10 object-contain"><div class="flex-1"><h4 class="text-sm font-semibold truncate">${item.name}</h4><span class="font-bold text-sm">₹${item.price.toLocaleString()}</span></div></div>`).join('')}</div><div class="border-t pt-4 flex justify-between items-center"><span class="font-bold">Total</span><span class="font-bold text-2xl text-blue-600">₹${total.toLocaleString()}</span></div></div></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderContact(container) {
+             container.innerHTML = `
+                <div class="fade-in max-w-3xl mx-auto px-4 py-16 text-center">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-8">We're Here to Help</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4 text-xl"><i class="fas fa-headset"></i></div>
+                            <h3 class="font-bold text-xl mb-2">Customer Care</h3>
+                            <p class="text-gray-600 mb-1">Call us: <span class="text-gray-900 font-medium">1800-123-4567</span></p>
+                            <p class="text-gray-600 mb-1">Email: <span class="text-gray-900 font-medium">support@mobiletown.in</span></p>
+                            <p class="text-gray-400 text-sm mt-4">Mon-Sat, 9AM - 7PM</p>
+                        </div>
+                         <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 text-xl"><i class="fas fa-map-marker-alt"></i></div>
+                            <h3 class="font-bold text-xl mb-2">Store Location</h3>
+                            <p class="text-gray-600 mb-1">123 Tech Park, Cyber City</p>
+                            <p class="text-gray-600 mb-1">Sector 22, Gurgaon</p>
+                            <p class="text-gray-600">India, 122002</p>
+                        </div>
+                    </div>
+                </div>
+             `;
+        }
+
+        // --- HELPERS ---
+        function getConditionColor(condition) {
+            switch(condition) { case 'Superb': return 'bg-green-100 text-green-800'; case 'Excellent': return 'bg-blue-100 text-blue-800'; case 'Good': return 'bg-yellow-100 text-yellow-800'; default: return 'bg-gray-100 text-gray-800'; }
+        }
+        function getProductCard(product) {
+            return `<div class="group relative bg-white border border-gray-100 rounded-2xl flex flex-col overflow-hidden hover:shadow-xl transition-all duration-300"><div class="aspect-w-3 aspect-h-4 bg-white relative cursor-pointer" onclick="router('product', ${product.id})"><img src="${product.images[0]}" class="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110"><div class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">${Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF</div></div><div class="flex-1 p-5 border-t border-gray-50"><h3 class="text-lg font-bold text-gray-900 truncate">${product.name}</h3><p class="text-lg font-bold text-gray-900">₹${product.price.toLocaleString()}</p></div></div>`;
+        }
+
+        // --- ACTIONS ---
+        function filterByBrand(brand) { router('shop', brand); }
+        function toggleCart() { document.body.classList.toggle('cart-open'); }
+        function addToCart(productId) { const product = products.find(p => p.id === productId); if (product) { cart.push(product); updateCartUI(); if (!document.body.classList.contains('cart-open')) toggleCart(); } }
+        function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
+        function updateCartUI() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            cartCount.innerText = cart.length;
+            let total = 0;
+            if (cart.length === 0) { cartItems.innerHTML = `<div class="text-center py-10"><p class="font-medium text-gray-900">Cart empty</p><button onclick="toggleCart(); router('shop')" class="mt-4 text-blue-600 text-sm font-bold">Shop Now</button></div>`; } 
+            else { cartItems.innerHTML = cart.map((item, index) => { total += item.price; return `<div class="flex py-2 border-b border-gray-100"><img src="${item.images[0]}" class="h-16 w-16 object-contain border rounded-lg"><div class="ml-3 flex-1"> <h3 class="text-sm font-semibold">${item.name}</h3><p class="text-sm">₹${item.price.toLocaleString()}</p></div><button onclick="removeFromCart(${index})" class="text-red-500 text-xs font-bold uppercase ml-2">Remove</button></div>`; }).join(''); }
+            cartTotal.innerText = '₹' + total.toLocaleString();
+        }
+        function handleOrder(e) { e.preventDefault(); alert('Order Placed! ID: MT-' + Math.floor(Math.random() * 10000)); cart = []; updateCartUI(); router('home'); }
+    </script>
+</body>
+</html>
